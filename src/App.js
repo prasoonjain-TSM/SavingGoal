@@ -1,9 +1,12 @@
 import "./App.css";
 import Navbar from "./components/navbar/Navbar";
-import MyForm from "./components/section/MyForm";
+import MyForm from "./components/section/form/MyForm";
 import FinancialGoalSummary from "./components/section/FinancialGoalSummary";
 import ShowTask from "./components/showTable/ShowTask";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./components/pages/Login";
+import Register from "./components/pages/Register";
+import Record from "./components/allRecord/Record";
 
 function App() {
   return (
@@ -36,6 +39,26 @@ function App() {
             exact
             path="/ShowTask"
             element={<ShowTask />}
+          />
+            <Route
+            exact
+            path="/Login"
+            element={<Login />}
+          />
+           <Route
+            exact
+            path="/Register"
+            element={<Register />}
+          />
+        <Route
+            exact
+            path="/Record"
+            element={<Record />}
+          />
+          <Route
+            exact
+            path="/compare"
+            element={<compare />}
           />
         </Routes>
       </BrowserRouter>

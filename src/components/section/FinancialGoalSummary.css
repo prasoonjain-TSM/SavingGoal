@@ -1,0 +1,17 @@
+
+h5 {
+    font-size: 1.5rem; 
+    font-weight: bold;
+  }
+  
+
+  p {
+    font-size: 1.2rem; 
+  }
+  
+  .p-4 {
+    padding: 2rem; 
+    background-color: #f8f9fa;
+    border-radius: 0.5rem; 
+  }
+  

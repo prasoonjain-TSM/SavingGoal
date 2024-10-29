@@ -1,60 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 
-export default function ShowTask() {
+function ShowTask() {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    setTasks(savedTasks);
+  }, []);
+
   return (
-    <div class="container mt-5">
-      <h2>Task List</h2>
-      <table class="table table-bordered">
-        <thead class="table-dark">
+    <div className="container mt-4">
+      <h3>Saved Tasks</h3>
+      <table className="table table-bordered mt-3">
+        <thead>
           <tr>
-            <th>ID</th>
-            <th>Task</th>
-            <th>Status</th>
-            <th>Due Date</th>
-            <th>Actions</th>
+            <th>Task Name</th>
+            <th>Total Amount</th>
+            <th>Frequency</th>
+            <th>Reach Date</th>
+            <th>Interest Rate (%)</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            onclick="window.location.href='task-detail.html';"
-            style={{ cursor: "pointer" }}
-          >
-            <td>1</td>
-            <td>Task 1</td>
-            <td>Pending</td>
-            <td>2024-11-01</td>
-            <td>
-              <div class="dropdown">
-                <button
-                  class="btn btn-secondary dropdown-toggle"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="fa-solid"></i>
-                </button>
-                <ul class="dropdown-menu">
-                  <li>
-                    <a class="dropdown-item" href="#" onclick="addTask()">
-                      Add Task
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#" onclick="editTask(1)">
-                      Edit Task
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#" onclick="deleteTask(1)">
-                      Delete Task
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </td>
-          </tr>
+          {tasks.length > 0 ? (
+            tasks.map((task, index) => (
+              <tr key={index}>
+                <td>{task.taskName}</td>
+                <td>{task.totalAmount}</td>
+                <td>{task.frequency}</td> {/* Displaying frequency here */}
+                <td>{task.reachDate}</td>
+                <td>{task.interestRate}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="text-center">No tasks available</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
   );
 }
+
+export default ShowTask;
