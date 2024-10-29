@@ -1,150 +1,135 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './MyForm.css';
 
 function MyForm() {
-  const [task, setTask] = useState({
-    taskName: '',
-    totalAmount: '',
-    frequency: '',
-    reachDate: '',
-    interestRate: ''
-  });
-
-  const [message, setMessage] = useState(''); // State for displaying the message
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setTask((prevTask) => ({ ...prevTask, [name]: value }));
-  };
+  const [taskName, setTaskName] = useState('');
+  const [totalAmount, setTotalAmount] = useState('');
+  const [frequency, setFrequency] = useState('month');
+  const [reachDate, setReachDate] = useState('');
+  const [interestRate, setInterestRate] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Retrieve tasks from localStorage or initialize as an empty array
+    const newTask = {
+      id: Date.now(), 
+      taskName,
+      totalAmount,
+      frequency,
+      reachDate,
+      interestRate,
+    };
+
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    // Add the new task to the array
-    savedTasks.push(task);
-    // Save back to localStorage
+    savedTasks.push(newTask);
     localStorage.setItem('tasks', JSON.stringify(savedTasks));
 
-    // Set the success message
     setMessage('Task added successfully!');
 
-    // Clear form fields after saving
-    setTask({
-      taskName: '',
-      totalAmount: '',
-      frequency: '',
-      reachDate: '',
-      interestRate: ''
-    });
-
-    // Optionally, hide the message after a few seconds
-    setTimeout(() => {
-      setMessage('');
-    }, 3000);
+    setTaskName('');
+    setTotalAmount('');
+    setFrequency('month');
+    setReachDate('');
+    setInterestRate('');
   };
 
   return (
-    <form className="p-3" onSubmit={handleSubmit}>
-      {message && <div className="alert alert-success">{message}</div>} {/* Message area */}
+    <div className="container mt-4">
+      <h3>Add Task</h3>
+      {message && <div className="alert alert-success">{message}</div>}
+      <form onSubmit={handleSubmit} className="p-3">
+        <div className="form-group">
+          <label htmlFor="taskName">Task Name</label>
+          <input
+            type="text"
+            className="form-control form-control-sm"
+            id="taskName"
+            value={taskName}
+            onChange={(e) => setTaskName(e.target.value)}
+            placeholder="Enter task name"
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="taskName">Task Name</label>
-        <input
-          type="text"
-          className="form-control form-control-sm"
-          id="taskName"
-          name="taskName"
-          value={task.taskName}
-          onChange={handleChange}
-          placeholder="Enter task name"
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="totalAmount">Total Amount</label>
+          <input
+            type="number"
+            className="form-control form-control-sm"
+            id="totalAmount"
+            value={totalAmount}
+            onChange={(e) => setTotalAmount(e.target.value)}
+            placeholder="Enter amount"
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="totalAmount">Total Amount</label>
-        <input
-          type="number"
-          className="form-control form-control-sm"
-          id="totalAmount"
-          name="totalAmount"
-          value={task.totalAmount}
-          onChange={handleChange}
-          placeholder="Enter amount"
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Frequency</label>
-        <div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="frequency"
-              id="monthly"
-              value="monthly"
-              onChange={handleChange}
-              checked={task.frequency === 'monthly'}
-            />
-            <label className="form-check-label" htmlFor="monthly">Monthly</label>
-          </div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="frequency"
-              id="weekly"
-              value="weekly"
-              onChange={handleChange}
-              checked={task.frequency === 'weekly'}
-            />
-            <label className="form-check-label" htmlFor="weekly">Weekly</label>
-          </div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="frequency"
-              id="yearly"
-              value="yearly"
-              onChange={handleChange}
-              checked={task.frequency === 'yearly'}
-            />
-            <label className="form-check-label" htmlFor="yearly">Yearly</label>
+        <div className="form-group">
+          <label>Frequency</label>
+          <div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="frequency"
+                id="monthly"
+                value="month"
+                checked={frequency === 'month'}
+                onChange={(e) => setFrequency(e.target.value)}
+              />
+              <label className="form-check-label" htmlFor="monthly">Month</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="frequency"
+                id="weekly"
+                value="week"
+                checked={frequency === 'week'}
+                onChange={(e) => setFrequency(e.target.value)}
+              />
+              <label className="form-check-label" htmlFor="weekly">Week</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="frequency"
+                id="yearly"
+                value="year"
+                checked={frequency === 'year'}
+                onChange={(e) => setFrequency(e.target.value)}
+              />
+              <label className="form-check-label" htmlFor="yearly">Year</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="form-group">
-        <label htmlFor="reachDate">Reach Date</label>
-        <input
-          type="date"
-          className="form-control form-control-sm"
-          id="reachDate"
-          name="reachDate"
-          value={task.reachDate}
-          onChange={handleChange}
-        />
-      </div>
+        <div className="form-group">
+          <label htmlFor="reachDate">Reach Date</label>
+          <input
+            type="date"
+            className="form-control form-control-sm"
+            id="reachDate"
+            value={reachDate}
+            onChange={(e) => setReachDate(e.target.value)}
+          />
+        </div>
 
-      <div className="form-group">
-        <label htmlFor="interestRate">Interest Rate (%)</label>
-        <input
-          type="number"
-          className="form-control form-control-sm"
-          id="interestRate"
-          name="interestRate"
-          value={task.interestRate}
-          onChange={handleChange}
-          placeholder="Enter interest rate"
-        />
-      </div>
-      
-      <button type="submit" className="btn btn-primary mt-2">Confirm</button>
-    </form>
+        <div className="form-group">
+          <label htmlFor="interestRate">Interest Rate (%)</label>
+          <input
+            type="number"
+            className="form-control form-control-sm"
+            id="interestRate"
+            value={interestRate}
+            onChange={(e) => setInterestRate(e.target.value)}
+            placeholder="Enter interest rate"
+          />
+        </div>
+
+        <button type="submit" className="btn btn-primary mt-2">Confirm</button>
+      </form>
+    </div>
   );
 }
 
