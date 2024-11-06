@@ -17,7 +17,7 @@ function Navbar() {
               <Link className="nav-link btn btn-light text-muted rounded-pill " to="/ShowTask">Show Task</Link>
             </li>
             <li className="nav-item nav-item-custom">
-              <Link className="nav-link btn btn-light text-muted rounded-pill" to="/compare">Compare Task</Link>
+              <Link className="nav-link btn btn-light text-muted rounded-pill" to="/CompareTask">Compare Task</Link>
             </li>
             <li className="nav-item nav-item-custom">
               <Link className="nav-link btn btn-light text-muted rounded-pill" to="/Record">Records</Link>
