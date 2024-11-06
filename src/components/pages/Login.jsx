@@ -17,7 +17,7 @@ export default function Login() {
         <input type="password" className="form-control" id="password" placeholder="Enter your password" required />
       </div>
       <div className="d-flex justify-content-between align-items-center">
-        <button type="submit" className="btn btn-primary w-100">Login</button>
+        <button type="submit" className="btn bg-dark text-light w-100">Login</button>
       </div>
       <div className="text-center mt-3">
         <Link to="#">Forgot your password?</Link>

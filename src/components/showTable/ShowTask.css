@@ -4,3 +4,6 @@
       font-size: 0.9rem; 
     }
   }
+  .no-underline {
+    text-decoration: none;
+  }

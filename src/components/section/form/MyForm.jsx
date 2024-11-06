@@ -10,24 +10,25 @@ function MyForm() {
   const [message, setMessage] = useState('');
   const [showSummary, setShowSummary] = useState(false);
 
-  const summaryRef = useRef(null);
-
   const [currentAmount, setCurrentAmount] = useState(0);
   const [depositAmount, setDepositAmount] = useState(0);
   const [leftAmountToComplete, setLeftAmountToComplete] = useState(0);
   const [timeLeft, setTimeLeft] = useState('');
+  const [startDate, setStartDate] = useState(''); 
+  const [annualInterest, setAnnualInterest] = useState(0); 
+
+  const summaryRef = useRef(null);
 
   const calculateSummary = () => {
     const amountLeft = totalAmount - currentAmount;
     setLeftAmountToComplete(amountLeft);
     setTotalAmount(amountLeft);
-    
 
     const targetDate = new Date(reachDate);
     const currentDate = new Date();
 
     const monthsLeft = (targetDate.getFullYear() - currentDate.getFullYear()) * 12 + (targetDate.getMonth() - currentDate.getMonth());
-    setTimeLeft(`${monthsLeft} months`);
+    setTimeLeft(`${monthsLeft}  months`);
 
     let requiredDeposit = 0;
     if (frequency === 'month') {
@@ -39,19 +40,27 @@ function MyForm() {
     }
 
     setDepositAmount(requiredDeposit);
+    const calculatedAnnualInterest = requiredDeposit * (interestRate / 100) * 12;
+    setAnnualInterest(calculatedAnnualInterest);
   };
+
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const currentDate = new Date().toISOString().split('T')[0]; 
+    setStartDate(currentDate);  
 
     const newTask = {
       id: Date.now(),
       taskName,
       totalAmount: Number(totalAmount),
-      frequency, // Ensure frequency is correctly set in the task
+      frequency,
       reachDate,
       interestRate,
       currentAmount,
+      startDate: currentDate,
     };
 
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -62,7 +71,7 @@ function MyForm() {
 
     setTaskName('');
     setTotalAmount('');
-    setFrequency('month'); 
+    setFrequency('month');
     setReachDate('');
     setInterestRate('');
 
@@ -78,10 +87,10 @@ function MyForm() {
 
   return (
     <div className="container mt-4">
-      <h3>Add Goals</h3>
+      <h3 className="text-secondary">Add Goals</h3>
       {message && <div className="alert alert-success">{message}</div>}
       <form onSubmit={handleSubmit} className="p-3">
-        <div className="form-group">
+        <div className="form-group text-secondary">
           <label htmlFor="taskName">Task Name</label>
           <input
             type="text"
@@ -93,7 +102,7 @@ function MyForm() {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group text-secondary">
           <label htmlFor="totalAmount">Total Amount</label>
           <input
             type="number"
@@ -105,12 +114,12 @@ function MyForm() {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group text-secondary">
           <label>Frequency</label>
           <div>
-            <div className="form-check form-check-inline">
+            <div className="form-check form-check-inline ">
               <input
-                className="form-check-input"
+                className="form-check-input "
                 type="radio"
                 name="frequency"
                 id="monthly"
@@ -118,7 +127,7 @@ function MyForm() {
                 checked={frequency === 'month'}
                 onChange={(e) => setFrequency(e.target.value)}
               />
-              <label className="form-check-label" htmlFor="monthly">Month</label>
+              <label className="form-check-label " htmlFor="monthly">Month</label>
             </div>
             <div className="form-check form-check-inline">
               <input
@@ -147,18 +156,18 @@ function MyForm() {
           </div>
         </div>
 
-        <div className="form-group">
+        <div className="form-group text-secondary">
           <label htmlFor="reachDate">Reach Date</label>
           <input
             type="date"
-            className="form-control form-control-sm"
+            className="form-control form-control-sm text-secondary"
             id="reachDate"
             value={reachDate}
             onChange={(e) => setReachDate(e.target.value)}
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group text-secondary">
           <label htmlFor="interestRate">Interest Rate (%)</label>
           <input
             type="number"
@@ -169,8 +178,9 @@ function MyForm() {
             placeholder="Enter interest rate"
           />
         </div>
-
-        <button type="submit" className="btn btn-primary mt-2">Confirm</button>
+        <div className="d-flex justify-content-center">
+          <button type="submit" className="btn bg-info text-secondary mt-2">Confirm</button>
+        </div>
       </form>
 
       {showSummary && (
@@ -180,6 +190,7 @@ function MyForm() {
             depositAmount={depositAmount}
             leftAmountToComplete={leftAmountToComplete}
             timeLeft={timeLeft}
+            annualInterest={annualInterest} 
             frequency={frequency} 
           />
         </div>

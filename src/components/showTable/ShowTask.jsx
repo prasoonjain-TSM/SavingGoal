@@ -1,6 +1,9 @@
+// ShowTask.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import './ShowTask.css'; 
+import AnnualInterestCalculator from './AnnualInterestCalculator';
 
 function ShowTask() {
   const [tasks, setTasks] = useState([]);
@@ -8,6 +11,14 @@ function ShowTask() {
   const [depositAmount, setDepositAmount] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const navigate = useNavigate();
+
+  const handleInterestUpdate = (taskId, newAmount) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, currentAmount: newAmount } : task
+    );
+    setTasks(updatedTasks);
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+  };
 
   useEffect(() => {
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -26,7 +37,7 @@ function ShowTask() {
 
   const handleAddDeposit = (taskId) => {
     setSelectedTaskId(taskId);
-    setShowModal(true); // Open the modal
+    setShowModal(true); 
   };
 
   const handleDepositChange = (e) => {
@@ -36,9 +47,9 @@ function ShowTask() {
   const handleSaveDeposit = () => {
     const updatedTasks = tasks.map((task) => {
       if (task.id === selectedTaskId) {
-  
         const updatedCurrentAmount = (Number(task.currentAmount) || 0) + Number(depositAmount);
-        return { ...task, currentAmount: updatedCurrentAmount };
+        const updatedStatus = updatedCurrentAmount === task.totalAmount ? 'Completed' : 'Active';
+        return { ...task, currentAmount: updatedCurrentAmount, status: updatedStatus };
       }
       return task;
     });
@@ -52,9 +63,9 @@ function ShowTask() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 text-muted">
       <h3>Saved Tasks</h3>
-      <table className="table table-bordered mt-3">
+      <table className="table table-bordered mt-3 text-muted">
         <thead>
           <tr>
             <th>Task Name</th>
@@ -63,6 +74,7 @@ function ShowTask() {
             <th>Reach Date</th>
             <th>Interest Rate (%)</th>
             <th>Current Amount</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -70,28 +82,43 @@ function ShowTask() {
           {tasks.length > 0 ? (
             tasks.map((task) => (
               <tr key={task.id}>
-                <td>{task.taskName}</td>
+                <td>
+                  <Link
+                    to={`/task/${task.id}`}
+                    state={{ task }}
+                    className="text-primary no-underline"
+                  >
+                    {task.taskName}
+                  </Link>
+                </td>
                 <td>{Number(task.totalAmount).toFixed(2)}</td>
                 <td>{task.frequency}</td>
                 <td>{task.reachDate}</td>
                 <td>{task.interestRate}</td>
                 <td>{Number(task.currentAmount).toFixed(2)}</td>
+                <td>{task.status || 'Active'}</td>
                 <td>
                   <button onClick={() => handleEditTask(task)} className="btn btn-warning me-2">Edit</button>
                   <button onClick={() => handleDeleteTask(task.id)} className="btn btn-danger me-2">Delete</button>
-                  <button onClick={() => handleAddDeposit(task.id)} className="btn btn-success me-2">Add Deposit</button>
+                  <button
+                    onClick={() => handleAddDeposit(task.id)}
+                    className="btn btn-success me-2"
+                    disabled={task.status === 'Completed'}
+                  >
+                    Add Deposit
+                  </button>
                 </td>
+                <AnnualInterestCalculator task={task} onInterestUpdate={handleInterestUpdate} />
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="text-center">No tasks available</td>
+              <td colSpan="8" className="text-center">No tasks available</td>
             </tr>
           )}
         </tbody>
       </table>
 
-      {/* Add Deposit Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add Deposit</Modal.Title>

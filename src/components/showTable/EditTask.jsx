@@ -12,6 +12,7 @@ function EditTask() {
   const [frequency, setFrequency] = useState('month');
   const [reachDate, setReachDate] = useState('');
   const [interestRate, setInterestRate] = useState('');
+  const [currentAmount, setCurrentAmount] = useState(''); 
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -21,6 +22,7 @@ function EditTask() {
       setFrequency(taskToEdit.frequency);
       setReachDate(taskToEdit.reachDate);
       setInterestRate(taskToEdit.interestRate);
+      setCurrentAmount(taskToEdit.currentAmount); 
     }
   }, [taskToEdit]);
 
@@ -34,6 +36,7 @@ function EditTask() {
       frequency,
       reachDate,
       interestRate,
+      currentAmount, 
     };
 
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
@@ -44,7 +47,7 @@ function EditTask() {
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     setMessage('Task updated successfully!');
 
-    // Navigate back to ShowTask page
+    
     setTimeout(() => {
       navigate('/');
     }, 1000);
@@ -141,6 +144,19 @@ function EditTask() {
             value={interestRate}
             onChange={(e) => setInterestRate(e.target.value)}
             placeholder="Enter interest rate"
+          />
+        </div>
+
+       
+        <div className="form-group">
+          <label htmlFor="currentAmount">Current Amount</label>
+          <input
+            type="number"
+            className="form-control form-control-sm"
+            id="currentAmount"
+            value={currentAmount}
+            onChange={(e) => setCurrentAmount(e.target.value)}
+            placeholder="Enter current amount"
           />
         </div>
 

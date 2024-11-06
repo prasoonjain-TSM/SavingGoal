@@ -24,7 +24,7 @@ export default function Register() {
         <label for="confirmPassword" className="form-label">Confirm Password</label>
         <input type="password" className="form-control" id="confirmPassword" placeholder="Re-enter your password" required />
       </div>
-      <button type="submit" className="btn btn-primary w-100">Register</button>
+      <button type="submit" className="btn bg-dark text-light w-100">Register</button>
       <div className="text-center mt-3">
         <p>Already have an account? <Link to="/Login">Login here</Link></p>
       </div>
