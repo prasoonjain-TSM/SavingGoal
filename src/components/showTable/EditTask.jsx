@@ -1,84 +1,58 @@
-import React, { useState, useRef, useEffect } from 'react';
-import FinancialGoalSummary from '../FinancialGoalSummary';
+// EditTask.jsx
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-function MyForm() {
+function EditTask() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const taskToEdit = location.state.task;
+
   const [taskName, setTaskName] = useState('');
   const [totalAmount, setTotalAmount] = useState('');
   const [frequency, setFrequency] = useState('month');
   const [reachDate, setReachDate] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [message, setMessage] = useState('');
-  const [showSummary, setShowSummary] = useState(false);
 
-  const summaryRef = useRef(null);
-
-  const [currentAmount, setCurrentAmount] = useState(0);
-  const [depositAmount, setDepositAmount] = useState(0);
-  const [leftAmountToComplete, setLeftAmountToComplete] = useState(0);
-  const [timeLeft, setTimeLeft] = useState('');
-
-  const calculateSummary = () => {
-    const amountLeft = totalAmount - currentAmount;
-    setLeftAmountToComplete(amountLeft);
-    setTotalAmount(amountLeft);
-    
-
-    const targetDate = new Date(reachDate);
-    const currentDate = new Date();
-
-    const monthsLeft = (targetDate.getFullYear() - currentDate.getFullYear()) * 12 + (targetDate.getMonth() - currentDate.getMonth());
-    setTimeLeft(`${monthsLeft} months`);
-
-    let requiredDeposit = 0;
-    if (frequency === 'month') {
-      requiredDeposit = amountLeft / monthsLeft;
-    } else if (frequency === 'week') {
-      requiredDeposit = amountLeft / (monthsLeft * 4);
-    } else if (frequency === 'year') {
-      requiredDeposit = amountLeft / (monthsLeft / 12);
+  useEffect(() => {
+    if (taskToEdit) {
+      setTaskName(taskToEdit.taskName);
+      setTotalAmount(taskToEdit.totalAmount);
+      setFrequency(taskToEdit.frequency);
+      setReachDate(taskToEdit.reachDate);
+      setInterestRate(taskToEdit.interestRate);
     }
-
-    setDepositAmount(requiredDeposit);
-  };
+  }, [taskToEdit]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newTask = {
-      id: Date.now(),
+    const updatedTask = {
+      id: taskToEdit.id,
       taskName,
-      totalAmount: Number(totalAmount),
-      frequency, // Ensure frequency is correctly set in the task
+      totalAmount,
+      frequency,
       reachDate,
       interestRate,
-      currentAmount,
     };
 
     const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    savedTasks.push(newTask);
-    localStorage.setItem('tasks', JSON.stringify(savedTasks));
+    const updatedTasks = savedTasks.map((task) =>
+      task.id === updatedTask.id ? updatedTask : task
+    );
 
-    setMessage('Task added successfully!');
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    setMessage('Task updated successfully!');
 
-    setTaskName('');
-    setTotalAmount('');
-    setFrequency('month'); 
-    setReachDate('');
-    setInterestRate('');
-
-    calculateSummary();
-    setShowSummary(true);
+    // Navigate back to ShowTask page
+    setTimeout(() => {
+      navigate('/');
+    }, 1000);
   };
-
-  useEffect(() => {
-    if (showSummary) {
-      summaryRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [showSummary]);
 
   return (
     <div className="container mt-4">
-      <h3>Add Goals</h3>
+      <h3>Edit Task</h3>
       {message && <div className="alert alert-success">{message}</div>}
       <form onSubmit={handleSubmit} className="p-3">
         <div className="form-group">
@@ -170,22 +144,12 @@ function MyForm() {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary mt-2">Confirm</button>
+        <button type="submit" className="btn btn-primary mt-2">
+          Update Task
+        </button>
       </form>
-
-      {showSummary && (
-        <div ref={summaryRef} className="mt-4">
-          <FinancialGoalSummary
-            totalAmount={totalAmount}
-            depositAmount={depositAmount}
-            leftAmountToComplete={leftAmountToComplete}
-            timeLeft={timeLeft}
-            frequency={frequency} 
-          />
-        </div>
-      )}
     </div>
   );
 }
 
-export default MyForm;
+export default EditTask;

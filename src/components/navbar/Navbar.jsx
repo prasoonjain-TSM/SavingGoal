@@ -5,7 +5,7 @@ import './Navbar.css';
 
 function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm p-3">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm p-3 sticky-top">
       <div className="container">
         <Link className="navbar-brand fw-bold text-light" to="/">Saving Goals</Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

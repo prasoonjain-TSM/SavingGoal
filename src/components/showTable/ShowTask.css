@@ -1,0 +1,6 @@
+@media (max-width: 576px) {
+    .table th,
+    .table td {
+      font-size: 0.9rem; 
+    }
+  }
