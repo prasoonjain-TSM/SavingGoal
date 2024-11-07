@@ -1,14 +1,14 @@
 // ShowTask.js
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Modal, Button } from 'react-bootstrap';
-import './ShowTask.css'; 
-import AnnualInterestCalculator from './AnnualInterestCalculator';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
+import "./ShowTask.css";
+import AnnualInterestCalculator from "./AnnualInterestCalculator";
 
 function ShowTask() {
   const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [depositAmount, setDepositAmount] = useState('');
+  const [depositAmount, setDepositAmount] = useState("");
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const navigate = useNavigate();
 
@@ -17,27 +17,39 @@ function ShowTask() {
       task.id === taskId ? { ...task, currentAmount: newAmount } : task
     );
     setTasks(updatedTasks);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   };
 
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
     setTasks(savedTasks);
   }, []);
 
+  const addNotification = (message) => {
+    const notifications =
+      JSON.parse(localStorage.getItem("notifications")) || [];
+    notifications.push(message);
+    localStorage.setItem("notifications", JSON.stringify(notifications));
+  };
+
   const handleDeleteTask = (taskId) => {
+    const deletedTask = tasks.find((task) => task.id === taskId);
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+    addNotification(`Task "${deletedTask.taskName}" has been deleted.`);
   };
 
   const handleEditTask = (task) => {
-    navigate('/edit', { state: { task } });
+    navigate("/edit", { state: { task } });
+
+    addNotification(`Task "${task.taskName}" has been edited.`);
   };
 
   const handleAddDeposit = (taskId) => {
     setSelectedTaskId(taskId);
-    setShowModal(true); 
+    setShowModal(true);
   };
 
   const handleDepositChange = (e) => {
@@ -47,18 +59,28 @@ function ShowTask() {
   const handleSaveDeposit = () => {
     const updatedTasks = tasks.map((task) => {
       if (task.id === selectedTaskId) {
-        const updatedCurrentAmount = (Number(task.currentAmount) || 0) + Number(depositAmount);
-        const updatedStatus = updatedCurrentAmount === task.totalAmount ? 'Completed' : 'Active';
-        return { ...task, currentAmount: updatedCurrentAmount, status: updatedStatus };
+        const updatedCurrentAmount =
+          (Number(task.currentAmount) || 0) + Number(depositAmount);
+        const updatedStatus =
+          updatedCurrentAmount === task.totalAmount ? "Completed" : "Active";
+        return {
+          ...task,
+          currentAmount: updatedCurrentAmount,
+          status: updatedStatus,
+        };
       }
       return task;
     });
 
     setTasks(updatedTasks);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
 
-    // Reset modal state
-    setDepositAmount('');
+    addNotification(
+      `Deposit added to task "${
+        updatedTasks.find((t) => t.id === selectedTaskId).taskName
+      }".`
+    );
+    setDepositAmount("");
     setShowModal(false);
   };
 
@@ -96,24 +118,39 @@ function ShowTask() {
                 <td>{task.reachDate}</td>
                 <td>{task.interestRate}</td>
                 <td>{Number(task.currentAmount).toFixed(2)}</td>
-                <td>{task.status || 'Active'}</td>
+                <td>{task.status || "Active"}</td>
                 <td>
-                  <button onClick={() => handleEditTask(task)} className="btn btn-warning me-2">Edit</button>
-                  <button onClick={() => handleDeleteTask(task.id)} className="btn btn-danger me-2">Delete</button>
+                  <button
+                    onClick={() => handleEditTask(task)}
+                    className="btn btn-warning me-2"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="btn btn-danger me-2"
+                  >
+                    Delete
+                  </button>
                   <button
                     onClick={() => handleAddDeposit(task.id)}
                     className="btn btn-success me-2"
-                    disabled={task.status === 'Completed'}
+                    disabled={task.status === "Completed"}
                   >
                     Add Deposit
                   </button>
                 </td>
-                <AnnualInterestCalculator task={task} onInterestUpdate={handleInterestUpdate} />
+                <AnnualInterestCalculator
+                  task={task}
+                  onInterestUpdate={handleInterestUpdate}
+                />
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="8" className="text-center">No tasks available</td>
+              <td colSpan="8" className="text-center">
+                No tasks available
+              </td>
             </tr>
           )}
         </tbody>

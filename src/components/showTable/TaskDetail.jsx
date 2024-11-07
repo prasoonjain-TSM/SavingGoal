@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -7,32 +7,59 @@ function TaskDetails() {
   const location = useLocation();
   const task = location.state?.task;
 
-  const [progress, setProgress] = useState(0);
+  const navigate = useNavigate();
 
+  const [progress, setProgress] = useState(0);
+  const [milestones, setMilestones] = useState([]);
+  const [achievedMilestones, setAchievedMilestones] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
+  // Load task-specific notifications from localStorage
   useEffect(() => {
     if (task) {
-      // Calculate progress when task data is available
       const totalAmount = Number(task.totalAmount);
       const currentAmount = Number(task.currentAmount);
       const newProgress =
         totalAmount > 0 ? ((currentAmount / totalAmount) * 100).toFixed(2) : 0;
       setProgress(newProgress);
+
+      const milestoneInterval = totalAmount / 4;
+      const milestoneAmounts = [];
+      for (let i = 1; i <= 4; i++) {
+        milestoneAmounts.push(i * milestoneInterval);
+      }
+      setMilestones(milestoneAmounts);
+
+      // Retrieve task-specific notifications using task.taskName as key
+      const savedNotifications =
+        JSON.parse(localStorage.getItem(task.taskName)) || [];
+      setNotifications(savedNotifications);
     }
   }, [task]);
 
-  if (!task) {
-    return (
-      <div className="container mt-4">
-        <div className="alert alert-warning text-center">
-          No task data available.
-        </div>
-      </div>
-    );
-  }
+  // Save new notifications and update task-specific history
+  useEffect(() => {
+    milestones.forEach((milestone) => {
+      if (
+        task.currentAmount >= milestone &&
+        !achievedMilestones.includes(milestone)
+      ) {
+        setAchievedMilestones((prev) => [...prev, milestone]);
 
+        const newNotification = `Milestone achieved: $${milestone.toFixed(2)}`;
+
+        const updatedNotifications = [...notifications, newNotification];
+        setNotifications(updatedNotifications);
+
+        // Save task-specific notifications to localStorage using task.taskName as key
+        localStorage.setItem(task.taskName, JSON.stringify(updatedNotifications));
+      }
+    });
+  }, [task.currentAmount, milestones, achievedMilestones, notifications, task]);
+
+  // Handle exporting the task details to a PDF
   const handleExportPDF = () => {
     const doc = new jsPDF();
-
     doc.setFontSize(18);
     doc.text("Savings Plan Details", 20, 20);
 
@@ -45,8 +72,22 @@ function TaskDetails() {
     doc.text(`Interest Rate: ${task.interestRate}%`, 20, 70);
     doc.text(`Current Amount: $${task.currentAmount}`, 20, 80);
 
-    // Save the PDF
     doc.save("savings_plan.pdf");
+  };
+
+  // Navigate back to the previous page
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  // Handle showing the history of the current task
+  const handleShowHistory = () => {
+    navigate("/history", {
+      state: {
+        task: task,
+        notifications: notifications,
+      },
+    });
   };
 
   return (
@@ -54,8 +95,14 @@ function TaskDetails() {
       <div className="row justify-content-center">
         <div className="col-md-10 col-lg-8">
           <div className="card border-0 shadow-sm">
-            <div className="card-header bg-secondary text-light text-center">
-              <h4 className="mb-0">Task Details</h4>
+            <div className="card-header bg-info text-light d-flex align-items-center">
+              {/* Back Icon */}
+              <i
+                className="fas fa-arrow-left me-3"
+                style={{ cursor: "pointer" }}
+                onClick={handleGoBack}
+              ></i>
+              <h4 className="mb-0 text-center text-secondary w-100">Task Details</h4>
             </div>
             <div className="card-body">
               <ul className="list-group list-group-flush">
@@ -92,9 +139,25 @@ function TaskDetails() {
                   <div>
                     <strong>Progress Towards Goal</strong>
                   </div>
-                  <div className="progress  mt-2">
+                  <div className="progress mt-2">
+                    {milestones.map((milestone, index) => (
+                      <div
+                        key={index}
+                        className="progress-bar bg-secondary"
+                        role="progressbar"
+                        style={{
+                          width: `${(milestone / task.totalAmount) * 100}%`,
+                          opacity: 0.4,
+                          zIndex: 1,
+                          position: "absolute",
+                        }}
+                        aria-valuenow={progress}
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    ))}
                     <div
-                      className="progress-bar bg-secondary"
+                      className="progress-bar bg-success"
                       role="progressbar"
                       style={{ width: `${progress}%` }}
                       aria-valuenow={progress}
@@ -105,22 +168,24 @@ function TaskDetails() {
                     </div>
                   </div>
                 </li>
+                <li className="list-group-item">
+                  <strong>Upcoming Milestones</strong>
+                  <ul>
+                    {milestones
+                      .filter((milestone) => milestone > task.currentAmount)
+                      .map((milestone, index) => (
+                        <li key={index}>${milestone.toFixed(2)}</li>
+                      ))}
+                  </ul>
+                </li>
               </ul>
             </div>
             <div className="card-footer d-flex justify-content-center">
-             
-              <button
-                className="btn btn-secondary me-2"
-                onClick={handleExportPDF}
-              >
+              <button className="btn btn-info me-2" onClick={handleExportPDF}>
                 Export Savings Plan
               </button>
-
-              <button
-                className="btn btn-secondary"
-                onClick={() => window.history.back()}
-              >
-                Back to Tasks
+              <button className="btn btn-info" onClick={handleShowHistory}>
+                History
               </button>
             </div>
           </div>

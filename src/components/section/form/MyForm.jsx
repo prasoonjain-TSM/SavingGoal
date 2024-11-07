@@ -1,23 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
-import FinancialGoalSummary from '../FinancialGoalSummary';
+import React, { useState, useRef, useEffect } from "react";
+import FinancialGoalSummary from "../FinancialGoalSummary";
 
 function MyForm() {
-  const [taskName, setTaskName] = useState('');
-  const [totalAmount, setTotalAmount] = useState('');
-  const [frequency, setFrequency] = useState('month');
-  const [reachDate, setReachDate] = useState('');
-  const [interestRate, setInterestRate] = useState('');
-  const [message, setMessage] = useState('');
+  const [taskName, setTaskName] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+  const [frequency, setFrequency] = useState("month");
+  const [reachDate, setReachDate] = useState("");
+  const [interestRate, setInterestRate] = useState("");
+  const [message, setMessage] = useState("");
   const [showSummary, setShowSummary] = useState(false);
 
   const [currentAmount, setCurrentAmount] = useState(0);
   const [depositAmount, setDepositAmount] = useState(0);
   const [leftAmountToComplete, setLeftAmountToComplete] = useState(0);
-  const [timeLeft, setTimeLeft] = useState('');
-  const [startDate, setStartDate] = useState(''); 
-  const [annualInterest, setAnnualInterest] = useState(0); 
+  const [timeLeft, setTimeLeft] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [annualInterest, setAnnualInterest] = useState(0);
 
   const summaryRef = useRef(null);
+
+  const isFormValid = taskName && totalAmount && reachDate && interestRate;
 
   const calculateSummary = () => {
     const amountLeft = totalAmount - currentAmount;
@@ -27,30 +29,31 @@ function MyForm() {
     const targetDate = new Date(reachDate);
     const currentDate = new Date();
 
-    const monthsLeft = (targetDate.getFullYear() - currentDate.getFullYear()) * 12 + (targetDate.getMonth() - currentDate.getMonth());
-    setTimeLeft(`${monthsLeft}  months`);
+    const monthsLeft =
+      (targetDate.getFullYear() - currentDate.getFullYear()) * 12 +
+      (targetDate.getMonth() - currentDate.getMonth());
+    setTimeLeft(`${monthsLeft} months`);
 
     let requiredDeposit = 0;
-    if (frequency === 'month') {
+    if (frequency === "month") {
       requiredDeposit = amountLeft / monthsLeft;
-    } else if (frequency === 'week') {
+    } else if (frequency === "week") {
       requiredDeposit = amountLeft / (monthsLeft * 4);
-    } else if (frequency === 'year') {
+    } else if (frequency === "year") {
       requiredDeposit = amountLeft / (monthsLeft / 12);
     }
 
     setDepositAmount(requiredDeposit);
-    const calculatedAnnualInterest = requiredDeposit * (interestRate / 100) * 12;
+    const calculatedAnnualInterest =
+      requiredDeposit * (interestRate / 100) * 12;
     setAnnualInterest(calculatedAnnualInterest);
   };
-
-  
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const currentDate = new Date().toISOString().split('T')[0]; 
-    setStartDate(currentDate);  
+    const currentDate = new Date().toISOString().split("T")[0];
+    setStartDate(currentDate);
 
     const newTask = {
       id: Date.now(),
@@ -63,17 +66,29 @@ function MyForm() {
       startDate: currentDate,
     };
 
-    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
     savedTasks.push(newTask);
-    localStorage.setItem('tasks', JSON.stringify(savedTasks));
+    localStorage.setItem("tasks", JSON.stringify(savedTasks));
 
-    setMessage('Task added successfully!');
+    const notificationMessage = `New task "${taskName}" has been added.`;
 
-    setTaskName('');
-    setTotalAmount('');
-    setFrequency('month');
-    setReachDate('');
-    setInterestRate('');
+    const notifications =
+      JSON.parse(localStorage.getItem("notifications")) || [];
+    notifications.push(notificationMessage);
+    localStorage.setItem("notifications", JSON.stringify(notifications));
+
+    setMessage("Task added successfully!");
+
+    // Hide the success message after 2 seconds
+    setTimeout(() => {
+      setMessage("");
+    }, 2000);
+
+    setTaskName("");
+    setTotalAmount("");
+    setFrequency("month");
+    setReachDate("");
+    setInterestRate("");
 
     calculateSummary();
     setShowSummary(true);
@@ -81,7 +96,7 @@ function MyForm() {
 
   useEffect(() => {
     if (showSummary) {
-      summaryRef.current.scrollIntoView({ behavior: 'smooth' });
+      summaryRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [showSummary]);
 
@@ -124,10 +139,12 @@ function MyForm() {
                 name="frequency"
                 id="monthly"
                 value="month"
-                checked={frequency === 'month'}
+                checked={frequency === "month"}
                 onChange={(e) => setFrequency(e.target.value)}
               />
-              <label className="form-check-label " htmlFor="monthly">Month</label>
+              <label className="form-check-label " htmlFor="monthly">
+                Month
+              </label>
             </div>
             <div className="form-check form-check-inline">
               <input
@@ -136,10 +153,12 @@ function MyForm() {
                 name="frequency"
                 id="weekly"
                 value="week"
-                checked={frequency === 'week'}
+                checked={frequency === "week"}
                 onChange={(e) => setFrequency(e.target.value)}
               />
-              <label className="form-check-label" htmlFor="weekly">Week</label>
+              <label className="form-check-label" htmlFor="weekly">
+                Week
+              </label>
             </div>
             <div className="form-check form-check-inline">
               <input
@@ -148,10 +167,12 @@ function MyForm() {
                 name="frequency"
                 id="yearly"
                 value="year"
-                checked={frequency === 'year'}
+                checked={frequency === "year"}
                 onChange={(e) => setFrequency(e.target.value)}
               />
-              <label className="form-check-label" htmlFor="yearly">Year</label>
+              <label className="form-check-label" htmlFor="yearly">
+                Year
+              </label>
             </div>
           </div>
         </div>
@@ -179,7 +200,13 @@ function MyForm() {
           />
         </div>
         <div className="d-flex justify-content-center">
-          <button type="submit" className="btn bg-info text-secondary mt-2">Confirm</button>
+          <button
+            type="submit"
+            className="btn bg-info text-secondary mt-2"
+            disabled={!isFormValid}
+          >
+            Confirm
+          </button>
         </div>
       </form>
 
@@ -190,8 +217,8 @@ function MyForm() {
             depositAmount={depositAmount}
             leftAmountToComplete={leftAmountToComplete}
             timeLeft={timeLeft}
-            annualInterest={annualInterest} 
-            frequency={frequency} 
+            annualInterest={annualInterest}
+            frequency={frequency}
           />
         </div>
       )}

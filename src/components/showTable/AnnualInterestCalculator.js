@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from "react";
 
 function getMonthDifference(startDate, endDate) {
   const start = new Date(startDate);
@@ -23,7 +23,7 @@ function AnnualInterestCalculator({ task, onInterestUpdate }) {
     addAnnualInterest();
   }, [addAnnualInterest]);
 
-  return null; 
+  return null;
 }
 
 export default AnnualInterestCalculator;

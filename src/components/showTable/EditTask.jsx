@@ -1,19 +1,18 @@
-// EditTask.jsx
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function EditTask() {
   const location = useLocation();
   const navigate = useNavigate();
   const taskToEdit = location.state.task;
 
-  const [taskName, setTaskName] = useState('');
-  const [totalAmount, setTotalAmount] = useState('');
-  const [frequency, setFrequency] = useState('month');
-  const [reachDate, setReachDate] = useState('');
-  const [interestRate, setInterestRate] = useState('');
-  const [currentAmount, setCurrentAmount] = useState(''); 
-  const [message, setMessage] = useState('');
+  const [taskName, setTaskName] = useState("");
+  const [totalAmount, setTotalAmount] = useState("");
+  const [frequency, setFrequency] = useState("month");
+  const [reachDate, setReachDate] = useState("");
+  const [interestRate, setInterestRate] = useState("");
+  const [currentAmount, setCurrentAmount] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (taskToEdit) {
@@ -22,7 +21,7 @@ function EditTask() {
       setFrequency(taskToEdit.frequency);
       setReachDate(taskToEdit.reachDate);
       setInterestRate(taskToEdit.interestRate);
-      setCurrentAmount(taskToEdit.currentAmount); 
+      setCurrentAmount(taskToEdit.currentAmount);
     }
   }, [taskToEdit]);
 
@@ -36,20 +35,19 @@ function EditTask() {
       frequency,
       reachDate,
       interestRate,
-      currentAmount, 
+      currentAmount,
     };
 
-    const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
     const updatedTasks = savedTasks.map((task) =>
       task.id === updatedTask.id ? updatedTask : task
     );
 
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-    setMessage('Task updated successfully!');
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    setMessage("Task updated successfully!");
 
-    
     setTimeout(() => {
-      navigate('/');
+      navigate("/");
     }, 1000);
   };
 
@@ -92,10 +90,12 @@ function EditTask() {
                 name="frequency"
                 id="monthly"
                 value="month"
-                checked={frequency === 'month'}
+                checked={frequency === "month"}
                 onChange={(e) => setFrequency(e.target.value)}
               />
-              <label className="form-check-label" htmlFor="monthly">Month</label>
+              <label className="form-check-label" htmlFor="monthly">
+                Month
+              </label>
             </div>
             <div className="form-check form-check-inline">
               <input
@@ -104,10 +104,12 @@ function EditTask() {
                 name="frequency"
                 id="weekly"
                 value="week"
-                checked={frequency === 'week'}
+                checked={frequency === "week"}
                 onChange={(e) => setFrequency(e.target.value)}
               />
-              <label className="form-check-label" htmlFor="weekly">Week</label>
+              <label className="form-check-label" htmlFor="weekly">
+                Week
+              </label>
             </div>
             <div className="form-check form-check-inline">
               <input
@@ -116,10 +118,12 @@ function EditTask() {
                 name="frequency"
                 id="yearly"
                 value="year"
-                checked={frequency === 'year'}
+                checked={frequency === "year"}
                 onChange={(e) => setFrequency(e.target.value)}
               />
-              <label className="form-check-label" htmlFor="yearly">Year</label>
+              <label className="form-check-label" htmlFor="yearly">
+                Year
+              </label>
             </div>
           </div>
         </div>
@@ -147,7 +151,6 @@ function EditTask() {
           />
         </div>
 
-       
         <div className="form-group">
           <label htmlFor="currentAmount">Current Amount</label>
           <input

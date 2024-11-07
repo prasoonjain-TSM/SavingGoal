@@ -1,61 +1,51 @@
-import React from 'react'
-
+import React, { useState, useEffect } from "react";
 
 export default function Record() {
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const savedNotifications =
+      JSON.parse(localStorage.getItem("notifications")) || [];
+    setNotifications(savedNotifications);
+  }, []);
+
+  const handleClearNotifications = () => {
+    localStorage.removeItem("notifications");
+    setNotifications([]);
+  };
+
+  const handleDeleteNotification = (index) => {
+    const updatedNotifications = notifications.filter((_, i) => i !== index);
+    setNotifications(updatedNotifications);
+    localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+  };
+
   return (
-    <div class="container mt-5">
-    <h2>Task List</h2>
-    <table class="table table-bordered">
-      <thead class="table-dark">
-        <tr>
-          <th>ID</th>
-          <th>Task</th>
-          <th>Status</th>
-          <th>Due Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          onclick="window.location.href='task-detail.html';"
-          style={{ cursor: "pointer" }}
-        >
-          <td>1</td>
-          <td>Task 1</td>
-          <td>Pending</td>
-          <td>2024-11-01</td>
-          <td>
-            <div class="dropdown">
-              <button
-                class="btn btn-secondary dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <i class="fa-solid"></i>
-              </button>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="dropdown-item" href="#" onclick="addTask()">
-                    Add Task
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" onclick="editTask(1)">
-                    Edit Task
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" onclick="deleteTask(1)">
-                    Delete Task
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  )
+    <div className="container mt-4 p-3 bg-white border rounded shadow">
+      <h5 className="mb-3 text-secondary">Notifications</h5>
+      {notifications.length > 0 ? (
+        <ul className="list-group list-group-flush">
+          {notifications.map((notification, index) => (
+            <li
+              key={index}
+              className="list-group-item d-flex justify-content-between align-items-center border-bottom"
+            >
+              <span>{notification}</span>
+              <div>
+                <button
+                  onClick={() => handleDeleteNotification(index)}
+                  className="btn btn-sm btn-info ms-2"
+                  aria-label="Close"
+                >
+                  &times;
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-muted">No notifications available.</p>
+      )}
+    </div>
+  );
 }
