@@ -1,0 +1,22 @@
+/* CompareTask.css */
+
+.comparison-selection {
+    margin-top: 20px;
+  }
+  
+  .comparison-result {
+    margin-top: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #007bff;
+  }
+  
+  h4 {
+    color: #333;
+  }
+  
+  .text-center h4 {
+    font-size: 1.25rem;
+    color: #555;
+  }
+  

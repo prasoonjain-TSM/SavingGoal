@@ -1,20 +1,40 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from "react";
+import "./FinancialGoalSummary.css";
 
-function FinancialGoalSummary() {
+const FinancialGoalSummary = ({
+  totalAmount,
+  depositAmount,
+  timeLeft,
+  frequency,
+  annualInterest,
+}) => {
+  const depositLabel =
+    frequency === "month"
+      ? "Monthly Deposit Required:"
+      : frequency === "week"
+      ? "Weekly Deposit Required:"
+      : "Yearly Deposit Required:";
+
   return (
-    <div className="p-4 m-auto">
-    <hr />
-    <h5>Financial Goal Summary</h5>
-    <hr />
-    <p><strong>Future Value of Your Financial Goal:</strong> $500</p>
-    <hr />
-    <p><strong>Future Value of Existing Investment:</strong> $500</p>
-    <hr />
-    <p><strong>Monthly Investment Needed:</strong> $500</p>
-    <hr />
-  </div>
+    <div>
+      <h4 className="text-secondary">Financial Goal Summary</h4>
+      <hr />
+      <p>
+        <strong className="text-secondary">Total Amount:</strong> ${totalAmount}
+      </p>
+      <p>
+        <strong className="text-secondary">{depositLabel}</strong> $
+        {depositAmount.toFixed(2)}
+      </p>
+      <p>
+        <strong className="text-secondary">Time Left:</strong> {timeLeft}
+      </p>
+      <p>
+        <strong className="text-secondary">Annual Interest:</strong> $
+        {annualInterest}
+      </p>
+    </div>
   );
-}
+};
 
 export default FinancialGoalSummary;

@@ -1,0 +1,19 @@
+
+.form-group label {
+    font-size: 1.1rem; 
+    font-weight: bold;
+  }
+  
+  .form-control-sm {
+    font-size: 0.8rem; 
+    padding: 0.3rem 0.5rem; 
+  }
+  
+  form.p-3 {
+    height: 500px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  
+  
